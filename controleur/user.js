@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user.js');
 
@@ -11,9 +12,9 @@ exports.creationCompte = (req, res, next) => {
         });
         user.save()
         .then(() => res.status(201).json({ message : 'utilisateur crée !'}))
-        .catch(error => res.status(400).json({ error: 'test' }));
+        .catch(error => res.status(400).json({ error}));
     })
-    .catch(error => res.status(500).json({ error: 'test1' }));
+    .catch(error => res.status(500).json({ error }));
 };
 
 exports.authentification = (req, res, next) => {
@@ -27,10 +28,16 @@ exports.authentification = (req, res, next) => {
             if(!valide) {
                 return res.status(401).json({ error: 'Mot de passe incorrect !'});
             }
-            res.statut(200).json({
-                userId: user._id,
-                token: 'TOKEN'
-            });
+            else {
+                res.status(200).json({
+                    userId: user._id,
+                    token: jwt.sign(
+                        { userId: user._id },
+                        'RANDOM_TOKEN_SECRET',
+                        { expiresIn: '24h' }
+                    )
+                });
+            }
         })
         .catch(error => res.status(500).json({ error: 'test2' }));
     })
