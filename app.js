@@ -6,7 +6,9 @@ const path = require('path');
 const sauceRoute = require('./routes/sauce.js');
 const userRoute = require('./routes/user.js');
 
-mongoose.connect('mongodb+srv://nomUtilisateur:MotdePasse@Nomdelabase.hdytj.mongodb.net/Nomdelabase?retryWrites=true&w=majority',
+require('dotenv').config();
+
+mongoose.connect(process.env.ATLAS_URL,
 { useNewUrlParser: true,
   useUnifiedTopology: true })
 .then(() => console.log('Connexion à MongoDB réussie !'))
