@@ -54,3 +54,46 @@ exports.trouverTouteLesSauces = (req, res, next) => {
     .catch(error => res.status(404).json({error}));
 };
 
+exports.likeSauce = (req, res, next) => {
+    let uid = req.body.userId, like = req.body.like;
+    
+    Sauce.findOne({ _id: req.params.id }).exec(function (error, sauce){
+      let msg = "";
+      let uiL = sauce.usersLiked.indexOf(uid);
+      let uiD = sauce.usersDisliked.indexOf(uid);
+      
+      if(like == 0 && uiL >-1){
+        sauce.likes--;
+        sauce.usersLiked.splice(uiL,1);
+        msg = "Unliked !";
+      }
+      else if(like == 0 && uiD >-1){
+        sauce.dislikes--;
+        sauce.usersDisliked.splice(uiD,1);
+        msg = "Undisliked !";
+      };
+      if(like == 1){
+  
+        sauce.likes++;
+        if (sauce.usersLiked.length > 0){
+          sauce.usersLiked=[uid];
+          
+        } else{
+          sauce.usersLiked.push(uid);
+        }
+        msg = "Like pris en compte !";
+      };
+      if(like == -1){
+        sauce.dislikes++;
+        if (sauce.usersDisliked.length > 0){
+          sauce.usersDisliked=[uid];
+        } else{
+          sauce.usersDisliked.push(uid);
+        }
+        msg = "Disike pris en compte !";
+      };
+      sauce.save()
+        .then(() => res.status(201).json({ message: msg}))
+        .catch(error => res.status(400).json({ error }));
+    });
+  };
