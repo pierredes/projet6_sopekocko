@@ -18,17 +18,22 @@ exports.creerSauce = (req, res, next) => {
 };
 
 exports.modifierSauce = (req, res, next) => {
+  if(Sauce.userId == req.body.userId) {
     const sauceObject = req.file ?
-    {
+      {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-    Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
-    .then(() => res.status(200).json({message: 'Sauce modifié !'}))
-    .catch(error => res.status(400).json({error}));
+      } : { ...req.body };
+      Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
+        .then(() => res.status(200).json({message: 'Sauce modifié !'}))
+        .catch(error => res.status(400).json({error}));
+  }else {
+    console.log('modification non autorisé');
+  } 
 };
 
 exports.supprimerUneSauce = (req, res, next) => {
+  if(Sauce.userId == req.body.userId) {
     Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
         const filename = sauce.imageUrl.split('/images/')[1];
@@ -39,7 +44,9 @@ exports.supprimerUneSauce = (req, res, next) => {
         })
     })
     .catch(error => res.status(500).json({error}));
-    
+  }else {
+    console.log('modification non autorisé');
+  }
 };
 
 exports.trouverUneSauce = (req, res, next) => {
@@ -55,7 +62,8 @@ exports.trouverTouteLesSauces = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-    let uid = req.body.userId, like = req.body.like;
+    let uid = req.body.userId;
+    let like = req.body.like;
     
     Sauce.findOne({ _id: req.params.id }).exec(function (error, sauce){
       let msg = "";
@@ -73,23 +81,13 @@ exports.likeSauce = (req, res, next) => {
         msg = "Undisliked !";
       };
       if(like == 1){
-  
         sauce.likes++;
-        if (sauce.usersLiked.length > 0){
-          sauce.usersLiked=[uid];
-          
-        } else{
-          sauce.usersLiked.push(uid);
-        }
+        sauce.usersLiked.push(uid);
         msg = "Like pris en compte !";
       };
       if(like == -1){
         sauce.dislikes++;
-        if (sauce.usersDisliked.length > 0){
-          sauce.usersDisliked=[uid];
-        } else{
-          sauce.usersDisliked.push(uid);
-        }
+        sauce.usersDisliked.push(uid);
         msg = "Disike pris en compte !";
       };
       sauce.save()
