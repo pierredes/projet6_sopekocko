@@ -1,0 +1,4 @@
+ATLAS_URL = mongodb+srv://User_name:password@bdd.hdytj.mongodb.net/bdd?retryWrites=true&w=majority;
+
+// changer ".envexample en .env"
+// remplacer les données par vos identifiant bdd
