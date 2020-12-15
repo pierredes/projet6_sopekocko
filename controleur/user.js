@@ -1,13 +1,23 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const User = require('../models/user.js');
 
+// var algorithme = 'aes256';
+
+// var cleCryptage = 'l5JmP+G0/1zB%;r8B8?2?2pcqGcL^3';
+
+require('dotenv').config();
+
 exports.creationCompte = (req, res, next) => {
+    var cipher = crypto.createCipher(process.env.algorithme, process.env.cleCryptage);
+    var crypted = cipher.update(req.body.email,'utf8','hex');
+    crypted += cipher.final('hex');
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         const user = new User({
-            email: req.body.email,
+            email: crypted,
             password: hash
         });
         user.save()
@@ -18,7 +28,10 @@ exports.creationCompte = (req, res, next) => {
 };
 
 exports.authentification = (req, res, next) => {
-    User.findOne({ email: req.body.email})
+    var cipher = crypto.createCipher(process.env.algorithme, process.env.cleCryptage);
+    var crypted = cipher.update(req.body.email,'utf8','hex');
+    crypted += cipher.final('hex');
+    User.findOne({ email: crypted})
     .then(user => {
         if(!user){
             return res.status(401).json({ error: 'utilisateur non trouvé !'});
