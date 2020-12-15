@@ -4,10 +4,6 @@ const crypto = require('crypto');
 
 const User = require('../models/user.js');
 
-// var algorithme = 'aes256';
-
-// var cleCryptage = 'l5JmP+G0/1zB%;r8B8?2?2pcqGcL^3';
-
 require('dotenv').config();
 
 exports.creationCompte = (req, res, next) => {
