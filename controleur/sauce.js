@@ -18,35 +18,27 @@ exports.creerSauce = (req, res, next) => {
 };
 
 exports.modifierSauce = (req, res, next) => {
-  if(Sauce.userId == req.body.userId) {
-    const sauceObject = req.file ?
-      {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-      } : { ...req.body };
-      Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
-        .then(() => res.status(200).json({message: 'Sauce modifié !'}))
-        .catch(error => res.status(400).json({error}));
-  }else {
-    console.log('modification non autorisé');
-  } 
+  const sauceObject = req.file ?
+    {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+    Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
+      .then(() => res.status(200).json({message: 'Sauce modifié !'}))
+      .catch(error => res.status(400).json({error}));
 };
 
 exports.supprimerUneSauce = (req, res, next) => {
-  if(Sauce.userId == req.body.userId) {
-    Sauce.findOne({ _id: req.params.id })
-    .then(sauce => {
-        const filename = sauce.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () =>{
-            Sauce.deleteOne({ _id: req.params.id})
-            .then(() => res.status(200).json({message: 'Sauce supprimé !'}))
-            .catch(error => res.status(400).json({error}));
-        })
-    })
-    .catch(error => res.status(500).json({error}));
-  }else {
-    console.log('modification non autorisé');
-  }
+  Sauce.findOne({ _id: req.params.id })
+  .then(sauce => {
+      const filename = sauce.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, () =>{
+          Sauce.deleteOne({ _id: req.params.id})
+          .then(() => res.status(200).json({message: 'Sauce supprimé !'}))
+          .catch(error => res.status(400).json({error}));
+      })
+  })
+  .catch(error => res.status(500).json({error}));
 };
 
 exports.trouverUneSauce = (req, res, next) => {
