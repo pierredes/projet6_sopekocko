@@ -1,4 +1,12 @@
-ATLAS_URL = mongodb+srv://User_name:password@bdd.hdytj.mongodb.net/bdd?retryWrites=true&w=majority;
+ATLAS_URL = mongodb+srv://User_name:password@clustesopekockor0.hdytj.mongodb.net/bdd?retryWrites=true&w=majority
+
+algorithme = algorithme
+
+cleCryptage = cleCryptage
 
 // changer ".envexample en .env"
-// remplacer les données par vos identifiant bdd
+// User_name = votre identifiant dans la base de données
+// password = votre mot de passe de base de données
+// bdd = le nom de la base de données
+// algorithme = l'algorithme de cryptage
+// cleCryptage = la clé de cryptage des données
