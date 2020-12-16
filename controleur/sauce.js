@@ -18,15 +18,24 @@ exports.creerSauce = (req, res, next) => {
 };
 
 exports.modifierSauce = (req, res, next) => {
-  const sauceObject = req.file ?
-    {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-    Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
+  Sauce.findOne({ _id: req.params.id })
+  .then((sauce) => {
+    if(sauce.userId == req.body.userId) {
+      const sauceObject = req.file ?
+      {
+        ...JSON.parse(req.body.sauce),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      } : { ...req.body };
+      Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
       .then(() => res.status(200).json({message: 'Sauce modifié !'}))
       .catch(error => res.status(400).json({error}));
-};
+      }
+    else{
+      console.log("Vous n'avez pas les droits pour modifier cette sauce");
+    }
+  })
+  .catch(error => res.status(500).json({error}));
+}
 
 exports.supprimerUneSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
